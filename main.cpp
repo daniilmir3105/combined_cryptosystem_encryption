@@ -17,7 +17,7 @@ std::map<char, uint> hexNumber;
 NTL::ZZ C3;
 
 
-typedef std::pair<NTL::ZZ, NTL::ZZ> KEY_PAIR;//<private_key, public_key>
+typedef std::pair<NTL::ZZ, NTL::ZZ> KEY_PAIR;
 
 NTL::ZZ readHexNumber(fstream & inputFile) {
 	NTL::ZZ p = conv<ZZ>(0);
@@ -30,9 +30,6 @@ NTL::ZZ readHexNumber(fstream & inputFile) {
 		else
 			p = 16*p + hexNumber[c];
 	}
-
-	//std::cout << p << std::endl;
-
 	return p;
 }
 
@@ -47,12 +44,11 @@ bool checkParameters(const NTL::ZZ & p, const NTL::ZZ & q, const NTL::ZZ & a) {
 		std::cout << "a^q(mod p) != 1" << std::endl;
 		return false;
 	}
-
 	return true;
 }
 
 KEY_PAIR generateKeyPair(const NTL::ZZ & privateKey, const NTL::ZZ & a, const NTL::ZZ & p) {
-	KEY_PAIR result;//<privateKey, a^privateKey mod p>
+	KEY_PAIR result;
 	NTL::ZZ publicKey = NTL::PowerMod(a, privateKey, p);
 	return std::make_pair(privateKey, publicKey);
 }
@@ -63,44 +59,33 @@ KEY_PAIR generateKeyPair(const NTL::ZZ & privateKey, const NTL::ZZ & a, const NT
 
 NTL::ZZ P(const NTL::ZZ & n) {
 	NTL::ZZ result;
-
-
 	return result;
 }
 
 NTL::ZZ A(const NTL::ZZ & n) {
 	NTL::ZZ result;
-	
-
 	return result;	
 }
 
 std::vector<NTL::ZZ> generateKeys(const NTL::ZZ & H,  const NTL::ZZ & M) {
-	//Length of keys H and M == 256 bits
 
 	std::vector<NTL::ZZ> keys;
-	//C2 = C4 = 0^256 C3 - global variable
 	NTL::ZZ U = H;
 	NTL::ZZ V = M;
 	NTL::ZZ W;
 	
-	//KEY1
 	NTL::bit_xor(W, U, V);
 	keys.push_back(P(W));
 	
-	//KEY2
 	U = A(U);
 	V = A(A(V));
 	NTL::bit_xor(W, U, V);
 	keys.push_back(P(W));
 
-	//KEY3
 	NTL::bit_xor(U, A(U), C3);
 	V = A(A(V));
 	NTL::bit_xor(W, U, V);
 	keys.push_back(P(W));
-
-	//KEY4
 	U = A(U);
 	V = A(A(V));
 	NTL::bit_xor(W, U, V);
@@ -113,21 +98,12 @@ std::vector<NTL::ZZ> generateKeys(const NTL::ZZ & H,  const NTL::ZZ & M) {
 
 NTL::ZZ encryptionTransform(const NTL::ZZ & H, const std::vector<NTL::ZZ> & keys) {
 	NTL::ZZ result;
-
-
-
 	return result;
 }
 
 
 NTL::ZZ gostR3411(const NTL::ZZ & input) {
 	NTL::ZZ result;
-
-
-//	std::vector<NTL::ZZ> keys = generateKeys(H, M);
-//	NTL::ZZ encryptionTransform(H, keys);
-
-
 	return result;
 }
 
@@ -161,11 +137,9 @@ int main(int argc, char * argv[] ) {
 		return 1;
 	}
 
-	//=============================READ PARAMETERS=============================
 	std::fstream inputFile;
 	inputFile.open(argv[1]);
 
-	//READ P Q A X Y C3
 	p = readHexNumber(inputFile);
 	q = readHexNumber(inputFile);
 	a = readHexNumber(inputFile);
@@ -191,12 +165,6 @@ int main(int argc, char * argv[] ) {
 	}
 
 	std::cout << "KEYS ARE CORRECT" << std::endl;
-
-
-	//SEND_MESSAGE_FROM_X_TO_Y
-	
-//!!!!	// NTL::ZZ kek = generateKEK(sender.first, recipient.second, p);
-
 	std::cout << "HASH FUNCTION\n" << std::endl;
 	HASH hash;
 
@@ -262,6 +230,5 @@ int main(int argc, char * argv[] ) {
 			printf("%x%x",l,r);
 	}
 	printf("\n");
-
 	return 0;
 }
