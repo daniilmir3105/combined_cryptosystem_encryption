@@ -7,10 +7,10 @@
 
 unsigned int rol(unsigned int a, int n) {
 	int t1, t2;
-	n = n % (sizeof(a)*8);  // нормализуем n
-	t1 = a << n;   // двигаем а вправо на n бит, теряя старшие биты
-	t2 = a >> (sizeof(a)*8 - n); // перегоняем старшие биты в младшие
-	return t1 | t2;  // объединяем старшие и младшие биты
+	n = n % (sizeof(a)*8);
+	t1 = a << n;
+	t2 = a >> (sizeof(a)*8 - n);
+	return t1 | t2;
 }
 
 
@@ -164,7 +164,6 @@ void compressionFunction(unsigned int * h, unsigned int * m) {
 		if (i == 6)
 			break;
 
-		//U = A(U)
 		l = u[6] ^ u[4];
 		r = u[7] ^ u[5];
 		u[0] = l;
@@ -187,7 +186,6 @@ void compressionFunction(unsigned int * h, unsigned int * m) {
 			u[7] ^= 0xFF00FF00;
 		}
 
-		//V = A(A(V))
 		l = v[4];
 		r = v[5];
 		v[4] = v[0];
@@ -251,13 +249,9 @@ void gostHashIteration(HASH * hash, const unsigned char * message_block, size_t 
 	printf("START gostHashIteration\n");
 	int i,j;
 	unsigned int a, b, cf, m[8];
-	//cf - carry flag
-	//Calculate sum
 	j = 0;
 	cf = 0;
 	
-	//Right order???
-	//256 bits == 8 x 32 bits
 	for (i = 0; i < 8; i++) {
 		a = ((unsigned int) message_block[j + 3]) |
 			(((unsigned int) message_block[j + 2]) << 8) |
@@ -271,15 +265,11 @@ void gostHashIteration(HASH * hash, const unsigned char * message_block, size_t 
 		cf = (cf < b || cf < a) ? 1 : 0;
 	}
 
-
-	//Calculate len
 	hash->len[0] += bits;
 	//if carry flag
 	if (hash->len[0] < bits)
 		hash->len[1]++;
 
-
-	//Compress
 	compressionFunction(hash->hash, m);
 	printf("END gostHashIteration\n\n");
 }
@@ -296,21 +286,18 @@ void gostHash(HASH * hash, const unsigned char * message, size_t len) {
 	for (; j < len && i < 32; i++, j++ )
 		hash->message_block[i] = message[j];
 
-	//If (message length <= 256 bits) => last iteration of the algorithm
 	if (i < 32) {
 		hash->message_block_size = i;
 		lastIteration(hash);
 		return;
 	}
 
-	//Message length > 256 bits => common iteration of the algorithm
 	gostHashIteration(hash, hash->message_block, 256);
 
 	for (; j + 32 < len; j += 32) {
 		gostHashIteration(hash, &message[j], 256);
 	}
 
-	//Last message block
 	i = 0;
 	for (; j < len; i++, j++ )
 		hash->message_block[i] = message[j];
@@ -330,7 +317,6 @@ void lastIteration(HASH * hash) {
 		for (int k = 0; k < shift; k++)
 			hash->message_block[k] = 0;
 		
-		//message_block_size in bytes 
 		gostHashIteration(hash, hash->message_block, hash->message_block_size << 3);
 	}
 
